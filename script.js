@@ -1,11 +1,11 @@
 class HashMap {
-	constructor() {
-		this.size = 0;
-		this.loadFactor = 0.75;
-		this.buckets = new Array(16);
+	constructor(initialCapacity = 1) {
+		this.buckets = new Array(initialCapacity);
 		for (let i = 0; i < 16; i++) {
 			this.buckets[i] = {};
 		}
+		this.size = 0;
+		this.loadFactor = 0.75;
 	}
 
 	hash(key) {
@@ -19,15 +19,14 @@ class HashMap {
 	}
 
 	set(key, value) {
+		if (this.size >= (this.buckets.length * this.loadFactor)) {
+			this.resize();
+		}
         const index = this.hash(key);
         if (!this.buckets[index].hasOwnProperty(key)) {
             this.size++;
         }
         this.buckets[index][key] = value;
-
-        if (this.size / this.buckets.length > this.loadFactor) {
-            this.resize();
-        }
     }
 
 	get(key) {
@@ -56,11 +55,8 @@ class HashMap {
     }
 
     clear() {
-        this.buckets = new Array(16);
-        for (let i = 0; i < 16; i++) {
-            this.buckets[i] = {};
-        }
-        this.size = 0;
+		this.buckets = [{}];
+		this.size = 0;
 	}
 	
 	keys() {
@@ -98,9 +94,32 @@ class HashMap {
         }
         return allEntries;
 	}
-	
-	
 
+	resize() {
+		const newCapacity = this.buckets.length * 2;
+		const newBuckets = new Array(newCapacity);
+
+		for (let i = 0; i < newCapacity; i++) {
+			newBuckets[i] = {};
+		}
+
+		for (let i = 0; i < this.buckets.length; i++) {
+            const bucket = this.buckets[i];
+            for (let key in bucket) {
+                if (bucket.hasOwnProperty(key)) {
+                    const newIndex = this.hash(key) % newCapacity;
+                    newBuckets[newIndex][key] = bucket[key];
+                }
+            }
+        }
+
+        this.buckets = newBuckets;
+	}
+
+	bucketCount() {
+        return this.buckets.length;
+    }
+	
 }
 
 module.exports = HashMap;

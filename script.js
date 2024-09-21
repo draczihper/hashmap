@@ -61,7 +61,45 @@ class HashMap {
             this.buckets[i] = {};
         }
         this.size = 0;
+	}
+	
+	keys() {
+        const allKeys = [];
+        for (let i = 0; i < this.buckets.length; i++) {
+            for (let key in this.buckets[i]) {
+                if (this.buckets[i].hasOwnProperty(key)) {
+                    allKeys.push(key);
+                }
+            }
+        }
+        return allKeys;
     }
+
+	values() {
+        const allValues = [];
+        for (let i = 0; i < this.buckets.length; i++) {
+            for (let key in this.buckets[i]) {
+                if (this.buckets[i].hasOwnProperty(key)) {
+                    allValues.push(this.buckets[i][key]);
+                }
+            }
+        }
+        return allValues;
+	}
+	
+	entries() {
+        const allEntries = [];
+        for (let i = 0; i < this.buckets.length; i++) {
+            for (let key in this.buckets[i]) {
+                if (this.buckets[i].hasOwnProperty(key)) {
+                    allEntries.push([key, this.buckets[i][key]]);
+                }
+            }
+        }
+        return allEntries;
+	}
+	
+	
 
 }
 

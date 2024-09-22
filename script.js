@@ -10,9 +10,6 @@ class Node {
 class HashMap {
 	constructor(initialCapacity = 1) {
 		this.buckets = new Array(initialCapacity);
-		for (let i = 0; i < this.buckets.length; i++) {
-			this.buckets[i] = {};
-		}
 		this.size = 0;
 		this.loadFactor = 0.75;
 	}
@@ -167,7 +164,21 @@ class HashMap {
 
 	bucketCount() {
         return this.buckets.length;
-    }
+	}
+	
+	collisions() {
+		let collisionCount = 0;
+		for (let i = 0; i < this.buckets.length; i++) {
+			if (this.buckets[i] && this.buckets[i].next) {
+				let current = this.buckets[i];
+				while (current.next) {
+					collisionCount++;
+					current = current.next;
+				}
+			}
+		}
+		return collisionCount;
+	}
 	
 }
 

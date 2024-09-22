@@ -1,7 +1,16 @@
+class Node {
+	constructor(key, value) {
+		this.key = key;
+		this.value = value;
+		this.next = null;
+	}
+}
+
+
 class HashMap {
 	constructor(initialCapacity = 1) {
 		this.buckets = new Array(initialCapacity);
-		for (let i = 0; i < 16; i++) {
+		for (let i = 0; i < this.buckets.length; i++) {
 			this.buckets[i] = {};
 		}
 		this.size = 0;
@@ -23,10 +32,24 @@ class HashMap {
 			this.resize();
 		}
         const index = this.hash(key);
-        if (!this.buckets[index].hasOwnProperty(key)) {
+        if (!this.buckets[index]) {
+			this.buckets[index] = new Node(key, value);
             this.size++;
-        }
-        this.buckets[index][key] = value;
+		} else {
+			let current = this.buckets[index];
+			while (current) {
+				if (current.key === key) {
+					current.value = value;
+					return;
+				}
+				if (!current.next) {
+					current.next = new Node(key, value);
+					this.size++;
+					return;
+				}
+				current = current.next;
+			}
+		}
     }
 
 	get(key) {

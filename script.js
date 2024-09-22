@@ -65,8 +65,15 @@ class HashMap {
     }
 
 	has(key) {
-        const index = this.hash(key);
-        return this.buckets[index].hasOwnProperty(key);
+		const index = this.hash(key);
+		let current = this.buckets[index];
+		while (current) {
+			if (current.key === key) {
+				return true;
+			}
+			current = current.next;
+		}
+		return false;
 	}
 	
 	remove(key) {
@@ -94,30 +101,30 @@ class HashMap {
     }
 
     clear() {
-		this.buckets = [{}];
+		this.buckets = new Array(1);
 		this.size = 0;
 	}
 	
 	keys() {
         const allKeys = [];
         for (let i = 0; i < this.buckets.length; i++) {
-            for (let key in this.buckets[i]) {
-                if (this.buckets[i].hasOwnProperty(key)) {
-                    allKeys.push(key);
-                }
+			let current = this.buckets[i];
+			while (current) {
+				allKeys.push(current.key);
+				current = current.next;
+			}
             }
-        }
         return allKeys;
     }
 
 	values() {
         const allValues = [];
         for (let i = 0; i < this.buckets.length; i++) {
-            for (let key in this.buckets[i]) {
-                if (this.buckets[i].hasOwnProperty(key)) {
-                    allValues.push(this.buckets[i][key]);
-                }
-            }
+           let current = this.buckets[i]
+			while (current) {
+			   allValues.push(current.value)
+				current = current.next;
+		   }
         }
         return allValues;
 	}
@@ -125,11 +132,11 @@ class HashMap {
 	entries() {
         const allEntries = [];
         for (let i = 0; i < this.buckets.length; i++) {
-            for (let key in this.buckets[i]) {
-                if (this.buckets[i].hasOwnProperty(key)) {
-                    allEntries.push([key, this.buckets[i][key]]);
-                }
-            }
+			let current = this.buckets[i]
+			while (current) {
+				allEntries.push([current.key, current.value])
+				current = current.next;
+			}
         }
         return allEntries;
 	}

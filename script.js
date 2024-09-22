@@ -53,8 +53,15 @@ class HashMap {
     }
 
 	get(key) {
-        const index = this.hash(key);
-        return this.buckets[index].hasOwnProperty(key) ? this.buckets[index][key] : null;
+		const index = this.hash(key);
+		let current = this.buckets[index];
+		while (current) {
+			if (current.key === key) {
+				return current.value;
+			}
+			current = current.next;
+		}
+		return undefined;
     }
 
 	has(key) {
@@ -64,13 +71,22 @@ class HashMap {
 	
 	remove(key) {
         const index = this.hash(key);
-        if (this.buckets[index].hasOwnProperty(key)) {
-            const value = this.buckets[index][key];
-            delete this.buckets[index][key];
-            this.size--;
-            return value;
-        }
-        return null;
+		let current = this.buckets[index];
+		let prev = null;
+		while (current) {
+			if (current.key === key) {
+				if (prev) {
+					prev.next = current.next;
+				} else {
+					this.buckets[index] = current.next;
+				}
+				this.size--;
+				return true;
+			}
+			prev = current;
+			current = current.next;
+		}
+		return false;
 	}
 	
 	length() {
@@ -122,18 +138,21 @@ class HashMap {
 		const newCapacity = this.buckets.length * 2;
 		const newBuckets = new Array(newCapacity);
 
-		for (let i = 0; i < newCapacity; i++) {
-			newBuckets[i] = {};
-		}
-
 		for (let i = 0; i < this.buckets.length; i++) {
-            const bucket = this.buckets[i];
-            for (let key in bucket) {
-                if (bucket.hasOwnProperty(key)) {
-                    const newIndex = this.hash(key) % newCapacity;
-                    newBuckets[newIndex][key] = bucket[key];
-                }
-            }
+			let current = this.buckets[i]
+			while (current) {
+				const newIndex = this.hash(current.key) % newCapacity;
+				if (!newBuckets[newIndex]) {
+					newBuckets[newIndex] = new Node(current.key, current.value);
+				} else {
+					let newCurrent = newBuckets[newIndex];
+					while (newCurrent.next) {
+						newCurrent = newCurrent.next;
+					}
+					newCurrent.next = new Node(current.key, current.value)
+				}
+				current = current.next;
+			}
         }
 
         this.buckets = newBuckets;
